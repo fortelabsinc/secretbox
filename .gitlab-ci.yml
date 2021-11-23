@@ -1,0 +1,55 @@
+stages:
+    - test
+    - docs
+
+
+.rust_template: &rust_template
+    image: "registry.gitlab.com/dzamlo/gitlab-ci-rust-test/rust:latest"
+    cache:
+        key: "$CI_JOB_NAME"
+        paths:
+            - cargo/
+            - target/
+    before_script:
+        - apt-get update -qq
+        - apt-get install -y -qq libsodium-dev libopus-dev libssl-dev
+        - export CARGO_HOME="$CI_PROJECT_DIR/cargo"
+        - rustup --version
+        - rustc --version
+        - cargo --version
+   
+.rust_test_template: &rust_test_template
+    <<: *rust_template
+    stage: test
+    script:
+        - cargo test --all --verbose
+
+.rust_docs_template: &rust_docs_template
+    <<: *rust_template
+    stage: docs
+    script:
+        - cargo doc --all
+    artifacts:
+        paths:
+            - target/doc
+
+
+test-stable:
+    <<: *rust_test_template
+    variables:
+        RUSTUP_TOOLCHAIN: stable
+        
+test-beta:
+    <<: *rust_test_template
+    variables:
+        RUSTUP_TOOLCHAIN: beta
+
+test-nightly:
+    <<: *rust_test_template
+    variables:
+        RUSTUP_TOOLCHAIN: nightly
+
+docs:
+    <<: *rust_docs_template
+    variables:
+        RUSTUP_TOOLCHAIN: nightly

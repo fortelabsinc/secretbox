@@ -1,0 +1,50 @@
+[package]
+name = "secretbox"
+version = "0.1.3"
+authors = ["Charlotte D <darkkirb@gmail.com>"]
+description = "Rust implementation of the secretbox encryption algorithm"
+license = "BSD-2-Clause"
+repository = "https://gitlab.com/DarkKirb/secretbox"
+readme = "README.md"
+keywords = ["cryptography", "nacl", "secretbox", "aead"]
+categories = ["cryptography", "network-programming"]
+exclude = [".gitignore", ".gitlab-ci.yml"]
+
+edition = "2018"
+
+[profile.bench]
+lto = true
+
+[profile.release]
+lto = true
+
+[features]
+curve25519 = ["x25519-dalek", "rand"]
+simd = ["packed_simd"]
+default = ["rand"]
+
+unsafe-do-not-enable = []
+
+[dependencies]
+packed_simd = { version = "0.3", optional = true }
+uint = "0.8"
+rand = { version = "0.7.0", optional = true }
+x25519-dalek = { version = "0.5.2", optional = true }
+chacha20poly1305 = "0.9.0"
+xsalsa20poly1305 = "0.8.0"
+
+[dev-dependencies]
+criterion = "0.2"
+
+[[bench]]
+name = "salsa20"
+harness = false
+[[bench]]
+name = "poly1305"
+harness = false
+[[bench]]
+name = "chacha20"
+harness = false
+[[bench]]
+name = "secretbox"
+harness = false
